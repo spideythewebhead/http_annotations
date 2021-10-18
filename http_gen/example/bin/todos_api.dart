@@ -83,4 +83,10 @@ abstract class TodosApi {
   Future<Response> getVersion({
     @Header('Api-Key') required String apiKey,
   });
+
+  @Route.get('/api/v0/todos')
+  Future<List<TodoDto>> getTodos(
+    @QueryParam() int page,
+    @QueryParam('named_limit') int limit,
+  );
 }

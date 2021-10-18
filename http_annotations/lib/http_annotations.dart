@@ -50,8 +50,6 @@ class Route {
 ///
 /// Annotate methods with constant headers
 ///
-/// TODO: add dynamic headers
-///
 /// ```dart
 /// @Route.get('/api/v0/todos')
 /// @Header('accept', 'application/json')
@@ -100,4 +98,20 @@ class StatusCodesWithBody {
 /// ```
 class Body {
   const Body();
+}
+
+///
+/// Annotate a parameter with query parameter
+///
+/// ```dart
+/// @Route.get('/api/v0/todos')
+/// Future<List<Todo>>(
+///   @QueryParam() int page,
+///   @QueryParam('named_limit') int limit,
+/// );
+/// ```
+class QueryParam {
+  final String? name;
+
+  const QueryParam([this.name]);
 }

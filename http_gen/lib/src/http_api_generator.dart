@@ -112,6 +112,7 @@ class $privateClassName implements ${element.name} {
       ..._getConstantHeaders(method),
       ..._getDynamicHeaders(method),
     };
+    final queryParams = _getQueryParams(method);
     final codesWithBody = _getStatusCodesWithBody(method);
     ParameterElement? body;
 
@@ -122,6 +123,7 @@ class $privateClassName implements ${element.name} {
     final requestBody = _makeRequest(
       route: route,
       headers: headers,
+      queryParams: queryParams,
       codesWithBody: codesWithBody,
       returnTypeElements: returnTypeElements,
       bodyElement: body,
@@ -200,6 +202,31 @@ ${method.declaration} async {
     return headers;
   }
 
+  Map<String, String> _getQueryParams(MethodElement method) {
+    final params = <String, String>{};
+
+    for (final parameter in method.parameters) {
+      for (final metadata in parameter.metadata) {
+        final constantValue = metadata.computeConstantValue();
+
+        if (constantValue == null) continue;
+
+        final annotation = ConstantReader(constantValue);
+
+        if (annotation.instanceOf(TypeChecker.fromRuntime(QueryParam))) {
+          if (!(parameter.type.isDartCoreString || parameter.type.isDartCoreInt || parameter.type.isDartCoreBool)) {
+            throw 'query param "${parameter.name}" unsupported type "${parameter.type.getDisplayString(withNullability: true)}" (string, int, bool are supported)"';
+          }
+
+          final name = annotation.peek('name')?.stringValue ?? parameter.name;
+          params[name] = '\$${parameter.name}';
+        }
+      }
+    }
+
+    return params;
+  }
+
   ParameterElement? _getBody(MethodElement method) {
     for (final parameter in method.parameters) {
       for (final metadata in parameter.metadata) {
@@ -243,6 +270,7 @@ ${method.declaration} async {
   String _makeRequest({
     required Route route,
     required Map<String, String> headers,
+    required Map<String, String> queryParams,
     required List<int> codesWithBody,
     required List<DartType> returnTypeElements,
     ParameterElement? bodyElement,
@@ -250,7 +278,21 @@ ${method.declaration} async {
     final isResponse = _isResponseObject(returnTypeElements.first);
     final isJsonResponse = _isJsonable(returnTypeElements.first);
 
-    final url = '$baseUrl${route.path}'.replaceAllMapped(RegExp(r'{([\w\d]{1,})}'), (m) => '\$${m.group(1)}');
+    String? queryParamsString;
+
+    if (queryParams.isNotEmpty) {
+      queryParamsString = '${{for (final param in queryParams.entries) "'${param.key}'": "'${param.value}'"}}';
+    }
+
+    String url;
+
+    if (route.path.startsWith(RegExp(r'https?'))) {
+      url = route.path;
+    } else {
+      url = '$baseUrl${route.path}';
+    }
+
+    url = url.replaceAllMapped(RegExp(r'{([\w\d]{1,})}'), (m) => '\$${m.group(1)}');
 
     String bodyString = '';
 
@@ -269,7 +311,7 @@ ${method.declaration} async {
     final headersString = '${{for (final header in headers.entries) "'${header.key}'": "'${header.value}'"}}';
 
     return '''
-  final uri = Uri.parse('$url');
+  final uri = Uri.parse('$url')${queryParamsString != null ? '.replace(queryParameters: $queryParamsString)' : ''};
 
   final response = await client.${route.method}(
     uri, 
