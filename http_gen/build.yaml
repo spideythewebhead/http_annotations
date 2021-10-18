@@ -1,0 +1,13 @@
+targets:
+  $default:
+    builders:
+      http_gen:
+        enabled: true
+
+builders:
+  http_gen:
+    import: "package:http_gen/builder.dart"
+    builder_factories: ["httpApiBuilder"]
+    build_extensions: { ".dart": [".http.dart"] }
+    build_to: source
+    auto_apply: dependents

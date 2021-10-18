@@ -1,0 +1,15 @@
+name: http_gen
+version: 0.0.1
+
+environment:
+  sdk: ">=2.14.0 <3.0.0"
+
+dependencies:
+  source_gen: 1.1.1
+  analyzer: ">=1.0.0 <3.0.0"
+
+dev_dependencies:
+  build: 2.1.1
+  build_runner: 2.1.4
+  http_annotations:
+    path: ../http_annotations
