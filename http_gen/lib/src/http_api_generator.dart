@@ -108,7 +108,10 @@ class $privateClassName implements ${element.name} {
   String _implementMethod(MethodElement method, Route route) {
     final returnType = method.returnType;
     final returnTypeElements = _extractReturnSignaturesTypes(returnType as ParameterizedType);
-    final headers = _getHeaders(method);
+    final headers = {
+      ..._getConstantHeaders(method),
+      ..._getDynamicHeaders(method),
+    };
     final codesWithBody = _getStatusCodesWithBody(method);
     ParameterElement? body;
 
@@ -154,7 +157,7 @@ ${method.declaration} async {
     return types;
   }
 
-  Map<String, String> _getHeaders(MethodElement method) {
+  Map<String, String> _getConstantHeaders(MethodElement method) {
     final headers = <String, String>{};
 
     for (final metadata in method.metadata) {
@@ -165,7 +168,32 @@ ${method.declaration} async {
       final annotation = ConstantReader(constantValue);
 
       if (annotation.instanceOf(TypeChecker.fromRuntime(Header))) {
-        headers[annotation.read('key').stringValue] = annotation.read('value').stringValue;
+        if (annotation.peek('value')?.isString ?? false) {
+          headers[annotation.read('key').stringValue] = annotation.read('value').stringValue;
+        }
+      }
+    }
+
+    return headers;
+  }
+
+  Map<String, String> _getDynamicHeaders(MethodElement method) {
+    final headers = <String, String>{};
+
+    for (final parameter in method.parameters) {
+      for (final metadata in parameter.metadata) {
+        final constantValue = metadata.computeConstantValue();
+
+        if (constantValue == null) continue;
+
+        final annotation = ConstantReader(constantValue);
+
+        if (annotation.instanceOf(TypeChecker.fromRuntime(Header))) {
+          if (!parameter.type.isDartCoreString) {
+            throw 'header "${parameter.name}" is not "string" but "${parameter.type.getDisplayString(withNullability: true)}"';
+          }
+          headers[annotation.read('key').stringValue] = '\$${parameter.name}';
+        }
       }
     }
 

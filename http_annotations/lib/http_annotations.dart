@@ -60,9 +60,9 @@ class Route {
 /// ```
 class Header {
   final String key;
-  final String value;
+  final String? value;
 
-  const Header(this.key, this.value);
+  const Header(this.key, [this.value]);
 
   const Header.contentTypeJson()
       : key = 'content-type',

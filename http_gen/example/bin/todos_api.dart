@@ -1,6 +1,3 @@
-import 'dart:html';
-import 'dart:io';
-
 import 'package:http_annotations/http_annotations.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
@@ -82,5 +79,8 @@ abstract class TodosApi {
   Future<Map<String, dynamic>> uhm(@Body() Map<String, String> body);
 
   @Route.get('/api/v0/version')
-  Future<Response> getVersion();
+  @Header.acceptJson()
+  Future<Response> getVersion({
+    @Header('Api-Key') required String apiKey,
+  });
 }
