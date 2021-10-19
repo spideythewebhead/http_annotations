@@ -3,6 +3,7 @@ import 'package:build/src/builder/build_step.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:build/build.dart';
 
 class _MethodWithRouteAnnotation {
   final MethodElement method;
@@ -42,7 +43,7 @@ Empty base url for HttpApi
     final methods = _getMethodsWithRouteAnnotation(element);
     final closeMethod = element.getMethod('close');
 
-    final privateClassName = '_${element.name}';
+    final privateClassName = '_\$${element.name}';
 
     final methodsBuffer = StringBuffer();
 
@@ -52,25 +53,57 @@ Empty base url for HttpApi
       );
     }
 
+    if (_hasWithInterceptorsAnnotation(element)) {
+      return '''
+      class $privateClassName implements ${element.name} {
+        final String baseUrl = '$baseUrl';
+        final _interceptors = <Interceptor>[];
+
+        late final _Client client;
+
+        $privateClassName() {
+          client = _Client(this);
+        }
+
+        @override
+        void addInterceptor(Interceptor interceptor) {
+          _interceptors.add(interceptor);  
+        }
+
+        @override
+        void removeInterceptor(Interceptor interceptor) {
+          _interceptors.remove(interceptor);  
+        }
+
+        $methodsBuffer
+
+        ${closeMethod != null ? '''
+          @override
+          void close() {
+            client.close();
+          }
+        ''' : ''}
+      }
+      ''';
+    }
+
     return '''
+    class $privateClassName implements ${element.name} {
+      final String baseUrl = '$baseUrl';
 
-class $privateClassName implements ${element.name} {
+      final client = Client();
 
-  final String baseUrl = '$baseUrl';
+      $privateClassName();
 
-  final Client client = Client();
+      $methodsBuffer
 
-  $privateClassName();
-
-  ${methodsBuffer.toString()}
-
-  ${closeMethod != null ? '''
-  @override
-  void close() {
-    client.close();
-  }
-  ''' : ''}
-}
+      ${closeMethod != null ? '''
+        @override
+        void close() {
+          client.close();
+        }
+      ''' : ''}
+    }
   ''';
   }
 
@@ -426,6 +459,22 @@ ${method.declaration} async {
   bool _hasFromJson(DartType type) {
     if (type.element is ClassElement) {
       return (type.element as ClassElement).constructors.any((c) => c.name == 'fromJson');
+    }
+
+    return false;
+  }
+
+  bool _hasWithInterceptorsAnnotation(ClassElement element) {
+    for (final metadata in element.metadata) {
+      final constantValue = metadata.computeConstantValue();
+
+      if (constantValue == null) continue;
+
+      final annotation = ConstantReader(constantValue);
+
+      if (annotation.instanceOf(TypeChecker.fromRuntime(WithInterceptors))) {
+        return true;
+      }
     }
 
     return false;

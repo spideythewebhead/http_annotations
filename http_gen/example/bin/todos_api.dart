@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:http_annotations/http_annotations.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
 part 'todos_api.http.dart';
+part 'todos_api.g.dart';
 
 class TodoDto {
   final int id;
@@ -52,7 +55,7 @@ class LoginResponse {
 
 @HttpApi('http://localhost:3000')
 abstract class TodosApi {
-  factory TodosApi() = _TodosApi;
+  factory TodosApi() = _$TodosApi;
 
   @Route.get('/api/v0/todos')
   @Header.acceptJson()
@@ -89,4 +92,14 @@ abstract class TodosApi {
     @QueryParam() int page,
     @QueryParam('named_limit') int limit,
   );
+}
+
+@HttpApi('http://localhost:3000')
+@WithInterceptors()
+abstract class TodosApiWithInterceptors with _$InterceptorsMixin {
+  factory TodosApiWithInterceptors() = _$TodosApiWithInterceptors;
+
+  @Route.get('/api/v0/todos')
+  @Header.acceptJson()
+  Future<List<TodoDto>> listOfTodoDto();
 }

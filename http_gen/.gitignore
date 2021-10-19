@@ -1,4 +1,5 @@
 .dart_tool
 .packages
 **/*.http.dart
+**/*.g.dart
 doc/api
