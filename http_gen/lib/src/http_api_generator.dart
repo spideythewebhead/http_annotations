@@ -55,24 +55,13 @@ Empty base url for HttpApi
 
     if (_hasWithInterceptorsAnnotation(element)) {
       return '''
-      class $privateClassName implements ${element.name} {
+      class $privateClassName with _\$InterceptorsMixin implements ${element.name} {
         final String baseUrl = '$baseUrl';
-        final _interceptors = <Interceptor>[];
 
         late final _Client client;
 
         $privateClassName() {
           client = _Client(this);
-        }
-
-        @override
-        void addInterceptor(Interceptor interceptor) {
-          _interceptors.add(interceptor);  
-        }
-
-        @override
-        void removeInterceptor(Interceptor interceptor) {
-          _interceptors.remove(interceptor);  
         }
 
         $methodsBuffer
