@@ -2,4 +2,4 @@
 library http_annotations;
 
 export 'src/http_annotations.dart';
-export 'src/interceptor.dart';
+export 'src/interceptors_client.dart';

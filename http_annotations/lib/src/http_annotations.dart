@@ -1,6 +1,3 @@
-/// Provides annotations for http code gen
-library http_annotations;
-
 ///
 /// Entry point annotation for generating requests
 ///
@@ -32,7 +29,6 @@ class HttpApi {
 /// ```
 ///
 /// Parameter replacement support
-/// TODO: add annotation for param @Param('name')
 /// ```dart
 /// @Route.get('/api/v0/todo/{id}')
 /// Future<Todo> getTodo(int id);
@@ -117,23 +113,4 @@ class QueryParam {
   final String? name;
 
   const QueryParam([this.name]);
-}
-
-///
-/// Annotate class with ability to add HTTP interceptors
-///
-/// ```dart
-///
-/// part 'file_name.http.dart';
-/// part 'file_name.g.dart';
-///
-/// @HttpApi('http://localhost:3000')
-/// @WithInterceptors()
-/// abstract class MyApi with _$InterceptorsMixin {
-///   // create a factory redirect (this is required)
-///   factory MyApi() = _MyApi;
-///
-/// ```
-class WithInterceptors {
-  const WithInterceptors();
 }
