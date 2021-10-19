@@ -5,7 +5,6 @@ import 'package:http/http.dart';
 import 'dart:convert';
 
 part 'todos_api.http.dart';
-part 'todos_api.g.dart';
 
 class TodoDto {
   final int id;
@@ -55,7 +54,7 @@ class LoginResponse {
 
 @HttpApi('http://localhost:3000')
 abstract class TodosApi {
-  factory TodosApi() = _$TodosApi;
+  factory TodosApi([Client? client]) = _$TodosApi;
 
   @Route.get('/api/v0/todos')
   @Header.acceptJson()
@@ -95,9 +94,8 @@ abstract class TodosApi {
 }
 
 @HttpApi('http://localhost:3000')
-@WithInterceptors()
-abstract class TodosApiWithInterceptors with _$InterceptorsMixin {
-  factory TodosApiWithInterceptors() = _$TodosApiWithInterceptors;
+abstract class TodosApiWithInterceptors with InterceptorsMixin {
+  factory TodosApiWithInterceptors([InterceptorsHttpClient? client]) = _$TodosApiWithInterceptors;
 
   @Route.get('/api/v0/todos')
   @Header.acceptJson()

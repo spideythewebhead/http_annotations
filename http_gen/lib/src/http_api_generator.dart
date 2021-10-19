@@ -53,18 +53,21 @@ Empty base url for HttpApi
       );
     }
 
-    if (_hasWithInterceptorsAnnotation(element)) {
+    if (_hasWithInterceptorsHttpClient(element)) {
       return '''
-      class $privateClassName with _\$InterceptorsMixin implements ${element.name} {
+      class $privateClassName with InterceptorsMixin implements ${element.name} {
         final String baseUrl = '$baseUrl';
 
-        late final _Client client;
+        late final InterceptorsHttpClient client;
 
-        $privateClassName() {
-          client = _Client(this);
+        $privateClassName([InterceptorsHttpClient? client]) {
+          this.client = client ?? InterceptorsHttpClient();
         }
 
         $methodsBuffer
+
+        void addInterceptor(Interceptor interceptor) => client.addInterceptor(interceptor);
+        void removeInterceptor(Interceptor interceptor) => client.removeInterceptor(interceptor);
 
         ${closeMethod != null ? '''
           @override
@@ -80,9 +83,11 @@ Empty base url for HttpApi
     class $privateClassName implements ${element.name} {
       final String baseUrl = '$baseUrl';
 
-      final client = Client();
+      late final Client client;
 
-      $privateClassName();
+      $privateClassName([Client? client]) {
+        this.client = client ?? Client();
+      }
 
       $methodsBuffer
 
@@ -351,6 +356,7 @@ ${method.declaration} async {
       ${_getJsonBody(returnTypeElements)}
     }
   }
+
   throw response;
   ''' : ''}
 ''';
@@ -453,19 +459,10 @@ ${method.declaration} async {
     return false;
   }
 
-  bool _hasWithInterceptorsAnnotation(ClassElement element) {
-    for (final metadata in element.metadata) {
-      final constantValue = metadata.computeConstantValue();
-
-      if (constantValue == null) continue;
-
-      final annotation = ConstantReader(constantValue);
-
-      if (annotation.instanceOf(TypeChecker.fromRuntime(WithInterceptors))) {
-        return true;
-      }
-    }
-
-    return false;
+  bool _hasWithInterceptorsHttpClient(ClassElement element) {
+    return element.constructors.single.parameters.any((param) {
+      final paramTypeName = param.type.getDisplayString(withNullability: true);
+      return paramTypeName == 'InterceptorsHttpClient' || paramTypeName == 'InterceptorsHttpClient?';
+    });
   }
 }

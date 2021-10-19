@@ -11,10 +11,3 @@ builders:
     build_extensions: { ".dart": [".http.dart"] }
     build_to: source
     auto_apply: dependents
-  with_interceptors:
-    import: "package:http_gen/builder.dart"
-    builder_factories: ["withInterceptorsBuilder"]
-    build_extensions: { ".dart": ["withinterceptors.g.part"] }
-    auto_apply: dependents
-    build_to: cache
-    applies_builders: ["source_gen|combining_builder"]
