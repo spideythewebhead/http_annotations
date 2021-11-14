@@ -1,0 +1,1 @@
+dart .githooks/pre-commit.dart "$@"
