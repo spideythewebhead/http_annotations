@@ -189,14 +189,14 @@ packages:
       path: "../../http_annotations"
       relative: true
     source: path
-    version: "0.0.2"
+    version: "0.0.3"
   http_gen:
     dependency: "direct dev"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.0.2"
+    version: "0.0.3"
   http_multi_server:
     dependency: transitive
     description:
@@ -394,4 +394,4 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.14.0 <3.0.0"
+  dart: ">=2.15.0 <3.0.0"
