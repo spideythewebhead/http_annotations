@@ -80,7 +80,7 @@ class Header {
 /// ```dart
 /// @Route.get('/api/v0/user/login')
 /// @StatusCodesWithBody([200, 400, 401])
-/// Future<LoginResponse> getTodos();
+/// Future<LoginResponse> login();
 /// ```
 class StatusCodesWithBody {
   final List<int> codes;
