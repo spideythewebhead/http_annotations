@@ -1,15 +1,14 @@
 name: http_gen
 version: 0.0.3
+description: http_annotations generator
+repository: https://github.com/spideythewebhead/http_annotations
 
 environment:
   sdk: ">=2.15.0 <3.0.0"
 
 dependencies:
-  source_gen: 1.1.1
+  source_gen: ^1.1.1
   analyzer: ">=1.0.0 <3.0.0"
-
-dev_dependencies:
-  build: 2.1.1
-  build_runner: 2.1.4
-  http_annotations:
-    path: ../http_annotations
+  build: ^2.1.1
+  build_runner: ^2.1.4
+  http_annotations: ^0.0.3

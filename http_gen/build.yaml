@@ -6,7 +6,7 @@ targets:
 
 builders:
   http_gen:
-    import: "package:http_gen/builder.dart"
+    import: "package:http_gen/http_gen.dart"
     builder_factories: ["httpApiBuilder"]
     build_extensions: { ".dart": [".http.dart"] }
     build_to: source

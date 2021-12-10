@@ -30,7 +30,7 @@ packages:
     source: hosted
     version: "2.8.2"
   build:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: build
       url: "https://pub.dartlang.org"
@@ -58,7 +58,7 @@ packages:
     source: hosted
     version: "2.0.4"
   build_runner:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: build_runner
       url: "https://pub.dartlang.org"
@@ -184,11 +184,11 @@ packages:
     source: hosted
     version: "0.13.4"
   http_annotations:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
-      path: "../http_annotations"
-      relative: true
-    source: path
+      name: http_annotations
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.0.3"
   http_multi_server:
     dependency: transitive
