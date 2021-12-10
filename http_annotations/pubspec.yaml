@@ -1,11 +1,13 @@
 name: http_annotations
 version: 0.0.3
+description: http annotation for code generation
+repository: https://github.com/spideythewebhead/http_annotations
 
 environment:
   sdk: ">=2.15.0 <3.0.0"
 
 dependencies:
-  http: 0.13.4
+  http: ^0.13.4
 
 dev_dependencies:
   lints: 1.0.1
