@@ -66,7 +66,10 @@ Empty base url for HttpApi
 
         $methodsBuffer
 
+        @override
         void addInterceptor(Interceptor interceptor) => client.addInterceptor(interceptor);
+        
+        @override
         void removeInterceptor(Interceptor interceptor) => client.removeInterceptor(interceptor);
 
         ${closeMethod != null ? '''
@@ -157,11 +160,11 @@ Empty base url for HttpApi
     );
 
     return '''
-    @override
-${method.declaration} async {
-  $requestBody
-}
-''';
+        @override
+    ${method.declaration} async {
+      $requestBody
+    }
+    ''';
   }
 
   List<DartType> _extractReturnSignaturesTypes(DartType type) {
@@ -291,7 +294,7 @@ ${method.declaration} async {
       }
     }
 
-    return <int>[200];
+    return const <int>[200];
   }
 
   String _makeRequest({
@@ -303,7 +306,7 @@ ${method.declaration} async {
     ParameterElement? bodyElement,
   }) {
     final isResponse = _isResponseObject(returnTypeElements.first);
-    final isJsonResponse = _isJsonable(returnTypeElements.first);
+    final isJsonResponse = _isJsonCovertable(returnTypeElements.first);
 
     String? queryParamsString;
 
@@ -326,10 +329,10 @@ ${method.declaration} async {
     if (bodyElement != null) {
       if (_hasToJson(bodyElement.type.element!)) {
         bodyString = 'body: jsonEncode(${bodyElement.name}.toJson()),';
-        headers['content-type'] = 'application/json';
+        headers['content-type'] = 'application/json; charset=utf8;';
       } else if (_isJsonMap(bodyElement.type)) {
         bodyString = 'body: jsonEncode(${bodyElement.name}),';
-        headers['content-type'] = 'application/json';
+        headers['content-type'] = 'application/json; charset=utf8;';
       } else {
         bodyString = 'body: ${bodyElement.name},';
       }
@@ -338,28 +341,28 @@ ${method.declaration} async {
     final headersString = '${{for (final header in headers.entries) "'${header.key}'": "'${header.value}'"}}';
 
     return '''
-  final uri = Uri.parse('$url')${queryParamsString != null ? '.replace(queryParameters: $queryParamsString)' : ''};
+      final uri = Uri.parse('$url')${queryParamsString != null ? '.replace(queryParameters: $queryParamsString)' : ''};
 
-  final response = await client.${route.method}(
-    uri, 
-    headers: $headersString,
-    $bodyString
-  );
+      final response = await client.${route.method}(
+        uri, 
+        headers: $headersString,
+        $bodyString
+      );
 
-  ${isResponse ? 'return response;' : ''}
+      ${isResponse ? 'return response;' : ''}
 
-  ${isJsonResponse ? '''
-  if (const $codesWithBody.contains(response.statusCode)) {
-    final contentType = response.headers['content-type'] ?? '';
+      ${isJsonResponse ? '''
+      if (const $codesWithBody.contains(response.statusCode)) {
+        final contentType = response.headers['content-type'] ?? '';
 
-    if (contentType.startsWith('application/json')) {
-      ${_getJsonBody(returnTypeElements)}
-    }
-  }
+        if (contentType.startsWith('application/json')) {
+          ${_getJsonBody(returnTypeElements)}
+        }
+      }
 
-  throw response;
-  ''' : ''}
-''';
+      throw response;
+      ''' : ''}
+    ''';
   }
 
   String _getJsonBody(List<DartType> types) {
@@ -382,7 +385,7 @@ ${method.declaration} async {
         return '''
         [
           for (final i${depth} in i${depth - 1})
-          ${visit(1 + depth, depth)}
+            ${visit(1 + depth, depth)}
         ]
         ''';
       } else if (_isJsonMap(type)) {
@@ -399,14 +402,14 @@ ${method.declaration} async {
         return '''
         {
           for (final i${depth} in i${depth - 1}.entries)
-          i$depth.key: ${visit(2 + depth, depth)}
+            i$depth.key: ${visit(2 + depth, depth)}
         }
         ''';
       } else if (_hasFromJson(type)) {
         if (depth == 0) {
           return '''
             final body = jsonDecode(response.body);
-            return ${type.getDisplayString(withNullability: false)}.fromJson(body);
+              return ${type.getDisplayString(withNullability: false)}.fromJson(body);
           ''';
         }
 
@@ -423,7 +426,7 @@ ${method.declaration} async {
     return visit(0, 0);
   }
 
-  bool _isJsonable(DartType type) {
+  bool _isJsonCovertable(DartType type) {
     if (type.isDartCoreList && type is ParameterizedType) {
       final typeArg = type.typeArguments.single;
 
