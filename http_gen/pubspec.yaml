@@ -1,10 +1,10 @@
 name: http_gen
-version: 0.0.3
+version: 0.0.4
 description: http_annotations generator
 repository: https://github.com/spideythewebhead/http_annotations
 
 environment:
-  sdk: ">=2.15.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
   source_gen: ^1.1.1
