@@ -19,9 +19,17 @@ Generate the files `dart run build_runner watch --delete-conflicting-outputs`
 Common imports on top of the file
 
 ```dart
-import 'package:http_annotations/http_annotations.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
+   import 'package:http_annotations/http_annotations.dart';
+   import 'package:http/http.dart';
+   import 'dart:convert';
+```
+
+Excluded generated files from analyzer in analysis_options.yaml
+
+```
+   analyzer:
+      exclude:
+         - lib/**/*.http.dart
 ```
 
 1. Add the generated file as a part of this file and annotate your class with @HttpApi()

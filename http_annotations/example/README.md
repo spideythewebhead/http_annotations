@@ -1,1 +1,1 @@
-### Run `dart run build_runner watch --delete-conflicting-outputs` to generate code
+Check a full [example](https://github.com/spideythewebhead/http_annotations/tree/main/http_annotations/example)

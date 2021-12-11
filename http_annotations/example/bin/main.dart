@@ -17,9 +17,3 @@ void main() async {
     print(e);
   }
 }
-
-extension LetExtension<T extends Object> on T {
-  R let<R>(R block(T it)) {
-    return block(this);
-  }
-}
