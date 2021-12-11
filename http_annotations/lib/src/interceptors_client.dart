@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:http/http.dart';
 
+///
+/// Provides optional [onRequest] and [onResponse] handlers
+/// to be used with [InterceptorsMixin]
 class Interceptor {
   final FutureOr<Request> Function(Request request)? onRequest;
   final FutureOr<Response> Function(Response response)? onResponse;
@@ -12,6 +15,18 @@ class Interceptor {
   });
 }
 
+///
+/// A mixin that can be used with your api class to add interceptors
+/// in conjunction with [InterceptorsHttpClient]
+///
+/// ```dart
+///
+/// @HttpApi('...')
+/// class MyApi with InterceptorsMixin {
+///   factory MyApi([InterceptorsHttpClient client]) = _$MyApi();
+/// }
+///
+/// ```
 class InterceptorsMixin {
   final _interceptors = <Interceptor>[];
 
@@ -24,6 +39,8 @@ class InterceptorsMixin {
   }
 }
 
+///
+/// Http client that supports [InterceptorsMixin]
 class InterceptorsHttpClient extends BaseClient with InterceptorsMixin {
   final _client = Client();
 

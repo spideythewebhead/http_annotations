@@ -1,5 +1,29 @@
 Provides annotations for http code gen
 
+Add in your pubspec.yaml
+
+```
+   dependencies:
+      http_annotations:
+```
+
+```
+   dev_depedencies:
+      // package that processes the http_annotations for code generation
+      http_gen:
+      build_runner:
+```
+
+Generate the files `dart run build_runner watch --delete-conflicting-outputs`
+
+Common imports on top of the file
+
+```dart
+import 'package:http_annotations/http_annotations.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
+```
+
 1. Add the generated file as a part of this file and annotate your class with @HttpApi()
 
    ```dart
@@ -8,7 +32,7 @@ Provides annotations for http code gen
    @HttpApi('http://localhost:3000')
    abstract class MyApi {
      // create a factory redirect (this is required)
-     factory MyApi() = _MyApi;
+     factory MyApi() = _$MyApi;
 
      // optional close method to dispose resources
      void close();
