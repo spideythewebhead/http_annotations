@@ -1,3 +1,7 @@
+### 0.0.6
+
+add HttpApi.useFlutterCompute (default to true) to use compute function on flutter for decoding
+
 ### 0.0.5
 
 fix example lint issues

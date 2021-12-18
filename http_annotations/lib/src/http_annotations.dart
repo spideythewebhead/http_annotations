@@ -16,8 +16,12 @@
 /// ```
 class HttpApi {
   final String baseUrl;
+  final bool useFlutterCompute;
 
-  const HttpApi(this.baseUrl);
+  const HttpApi(
+    this.baseUrl, {
+    this.useFlutterCompute = true,
+  });
 }
 
 ///
