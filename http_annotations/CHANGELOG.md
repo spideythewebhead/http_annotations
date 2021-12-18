@@ -1,3 +1,7 @@
+### 0.0.7
+
+remove semicolon from value Header.contentTypeJson and Header.acceptJson
+
 ### 0.0.6
 
 add HttpApi.useFlutterCompute (default to true) to use compute function on flutter for decoding

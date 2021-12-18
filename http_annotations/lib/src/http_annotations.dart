@@ -67,11 +67,11 @@ class Header {
 
   const Header.contentTypeJson()
       : key = 'content-type',
-        value = 'application/json; charset=utf-8;';
+        value = 'application/json; charset=utf-8';
 
   const Header.acceptJson()
       : key = 'accept',
-        value = 'application/json; charset=utf-8;';
+        value = 'application/json; charset=utf-8';
 }
 
 ///
