@@ -20,6 +20,7 @@ class HttpApiGenerator extends GeneratorForAnnotation<HttpApi> {
 
   @override
   String generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) {
+    final useFlutterCompute = annotation.read('useFlutterCompute').boolValue;
     baseUrl = annotation.read('baseUrl').stringValue;
 
     if (element.kind != ElementKind.CLASS) {
@@ -28,17 +29,22 @@ class HttpApiGenerator extends GeneratorForAnnotation<HttpApi> {
 
     if (baseUrl.isEmpty) {
       throw '''
-$element 
-Empty base url for HttpApi
-''';
+        $element 
+        Empty base url for HttpApi
+      ''';
     }
 
-    return _createOutput(element as ClassElement, baseUrl);
+    return _createOutput(
+      element as ClassElement,
+      baseUrl,
+      useFlutterCompute,
+    );
   }
 
   String _createOutput(
     ClassElement element,
     String baseUrl,
+    bool useFlutterCompute,
   ) {
     final methods = _getMethodsWithRouteAnnotation(element);
     final closeMethod = element.getMethod('close');
@@ -53,8 +59,22 @@ Empty base url for HttpApi
       );
     }
 
+    final jsonDecode = '''
+      FutureOr<dynamic> _jsonDecode(String payload) async {
+        ${useFlutterCompute ? '''
+          if (Platform.environment.containsKey('flutter')) {
+            return compute(jsonDecode, payload);
+          }
+        ''' : ''}
+
+        return jsonDecode(payload);
+      }
+    ''';
+
     if (_hasWithInterceptorsHttpClient(element)) {
       return '''
+      $jsonDecode
+
       class $privateClassName with InterceptorsMixin implements ${element.name} {
         final String baseUrl = '$baseUrl';
 
@@ -83,6 +103,8 @@ Empty base url for HttpApi
     }
 
     return '''
+    $jsonDecode
+
     class $privateClassName implements ${element.name} {
       final String baseUrl = '$baseUrl';
 
@@ -362,6 +384,8 @@ Empty base url for HttpApi
 
       throw response;
       ''' : ''}
+
+      ${isResponse || isJsonResponse ? '' : 'throw response;'}
     ''';
   }
 
@@ -374,7 +398,7 @@ Empty base url for HttpApi
       if (type.isDartCoreList) {
         if (depth == 0) {
           return '''
-          final body = jsonDecode(response.body);
+          final body = await _jsonDecode(response.body);
           return [
             for (final i0 in body)
               ${visit(1 + depth, 0)}
@@ -391,7 +415,7 @@ Empty base url for HttpApi
       } else if (_isJsonMap(type)) {
         if (depth == 0) {
           return '''
-          final body = jsonDecode(response.body);
+          final body = await _jsonDecode(response.body);
           return {
             for (final i0 in body.entries)
               i0.key: ${visit(2 + depth, depth)}
@@ -408,8 +432,8 @@ Empty base url for HttpApi
       } else if (_hasFromJson(type)) {
         if (depth == 0) {
           return '''
-            final body = jsonDecode(response.body);
-              return ${type.getDisplayString(withNullability: false)}.fromJson(body);
+            final body = await _jsonDecode(response.body);
+            return ${type.getDisplayString(withNullability: false)}.fromJson(body);
           ''';
         }
 
@@ -448,7 +472,11 @@ Empty base url for HttpApi
 
   bool _hasToJson(Element element) {
     if (element is ClassElement) {
-      return element.methods.any((c) => c.name == 'toJson');
+      bool isMethodToJson(MethodElement method) {
+        return method.name == 'toJson';
+      }
+
+      return element.methods.any(isMethodToJson) || element.mixins.any((mixin) => mixin.methods.any(isMethodToJson));
     }
 
     return false;

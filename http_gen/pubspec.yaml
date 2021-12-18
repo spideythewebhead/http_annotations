@@ -1,5 +1,5 @@
 name: http_gen
-version: 0.0.4
+version: 0.0.6
 description: http_annotations generator
 repository: https://github.com/spideythewebhead/http_annotations
 
