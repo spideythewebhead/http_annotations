@@ -1,5 +1,5 @@
 name: http_annotations
-version: 0.0.7
+version: 0.0.8
 description: http annotations for code generation for package http
 repository: https://github.com/spideythewebhead/http_annotations
 

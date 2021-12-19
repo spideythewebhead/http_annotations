@@ -1,3 +1,7 @@
+### 0.0.8
+
+HttpApi.useFlutterCompute set to default as false
+
 ### 0.0.7
 
 remove semicolon from value Header.contentTypeJson and Header.acceptJson

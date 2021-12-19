@@ -22,6 +22,7 @@ Common imports on top of the file
    import 'package:http_annotations/http_annotations.dart';
    import 'package:http/http.dart';
    import 'dart:convert';
+   import 'dart:async' show compute; // optional, if you use useFlutterCompute
 ```
 
 Excluded generated files from analyzer in analysis_options.yaml
@@ -37,7 +38,10 @@ Excluded generated files from analyzer in analysis_options.yaml
    ```dart
    part 'file_name.http.dart';
 
-   @HttpApi('http://localhost:3000')
+   @HttpApi(
+      'http://localhost:3000',
+      useFlutterCompute: true, // is you want to use compute (defaults to false)
+   )
    abstract class MyApi {
      // create a factory redirect (this is required)
      factory MyApi() = _$MyApi;

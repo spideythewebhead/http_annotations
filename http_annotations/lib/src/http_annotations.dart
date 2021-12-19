@@ -5,7 +5,10 @@
 ///
 /// part 'file_name.http.dart';
 ///
-/// @HttpApi('http://localhost:3000')
+/// @HttpApi(
+///   'http://localhost:3000',
+///   useFlutterCompute: true // defaults to false
+/// )
 /// abstract class MyApi {
 ///   // create a factory redirect (this is required)
 ///   factory MyApi() = _MyApi;
@@ -20,7 +23,7 @@ class HttpApi {
 
   const HttpApi(
     this.baseUrl, {
-    this.useFlutterCompute = true,
+    this.useFlutterCompute = false,
   });
 }
 
