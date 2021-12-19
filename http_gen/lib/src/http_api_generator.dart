@@ -60,15 +60,8 @@ class HttpApiGenerator extends GeneratorForAnnotation<HttpApi> {
     }
 
     final jsonDecode = '''
-      FutureOr<dynamic> _jsonDecode(String payload) async {
-        ${useFlutterCompute ? '''
-          if (Platform.environment.containsKey('flutter')) {
-            return compute(jsonDecode, payload);
-          }
-        ''' : ''}
-
-        return jsonDecode(payload);
-      }
+      Future<dynamic> _jsonDecode(String payload) async {
+        ${useFlutterCompute ? 'return compute(jsonDecode, payload);' : 'return jsonDecode(payload);'}
     ''';
 
     if (_hasWithInterceptorsHttpClient(element)) {
@@ -351,10 +344,10 @@ class HttpApiGenerator extends GeneratorForAnnotation<HttpApi> {
     if (bodyElement != null) {
       if (_hasToJson(bodyElement.type.element!)) {
         bodyString = 'body: jsonEncode(${bodyElement.name}.toJson()),';
-        headers['content-type'] = 'application/json; charset=utf8;';
+        headers['content-type'] = 'application/json; charset=utf-8';
       } else if (_isJsonMap(bodyElement.type)) {
         bodyString = 'body: jsonEncode(${bodyElement.name}),';
-        headers['content-type'] = 'application/json; charset=utf8;';
+        headers['content-type'] = 'application/json; charset=utf-8';
       } else {
         bodyString = 'body: ${bodyElement.name},';
       }

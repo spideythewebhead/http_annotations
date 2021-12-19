@@ -1,3 +1,7 @@
+### 0.0.8
+
+change how useFlutterCompute generates code
+
 ### 0.0.6
 
 - support toJson from mixins (eg freezed)
